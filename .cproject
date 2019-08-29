@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+    	
+    <storageModule moduleId="org.eclipse.cdt.core.settings">
+        		
+        <cconfiguration id="cdt.managedbuild.toolchain.xlupc.exe.debug.1078266984">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.xlupc.exe.debug.1078266984" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+                				
+                <externalSettings/>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration buildProperties="" id="cdt.managedbuild.toolchain.xlupc.exe.debug.1078266984" name="Debug" parent="org.eclipse.cdt.build.core.emptycfg">
+                    					
+                    <folderInfo id="cdt.managedbuild.toolchain.xlupc.exe.debug.1078266984.502727242" name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.xlupc.exe.debug.1628325510" name="XL UPC Tool Chain" superClass="cdt.managedbuild.toolchain.xlupc.exe.debug">
+                            							
+                            <targetPlatform archList="all" id="cdt.managedbuild.targetplatform.xlupc.exe.debug.1417366429" name="Debug Platform" osList="all" superClass="cdt.managedbuild.targetplatform.xlupc.exe.debug"/>
+                            							
+                            <builder id="cdt.managedbuild.builder.xlupc.exe.debug.408734952" managedBuildOn="false" name="Gnu Make Builder.Debug" superClass="cdt.managedbuild.builder.xlupc.exe.debug"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.compiler.xlupc.exe.debug.435351113" name="Local XL UPC Compiler" superClass="cdt.managedbuild.tool.compiler.xlupc.exe.debug"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.linker.xlupc.exe.debug.1685397514" name="XL UPC Executable Linker" superClass="cdt.managedbuild.tool.linker.xlupc.exe.debug"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.assembler.xlupc.exe.debug.724717471" name="XL Assembler" superClass="cdt.managedbuild.tool.assembler.xlupc.exe.debug"/>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+        		
+        <project id="yiimp-gr.null.910782221" name="yiimp-gr"/>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="scannerConfiguration">
+        		
+        <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+    
+</cproject>
