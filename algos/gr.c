@@ -61,53 +61,49 @@ enum CNAlgo {
 	CN_HASH_FUNC_COUNT
 };
 
-static void getAlgoString(const uint8_t* prevblock, char *output, int algoCount)
-{
-	char *sptr = output;
-	int j;
-	bool selectedAlgo[algoCount];
-	for(int z=0; z < algoCount; z++) {
-	   selectedAlgo[z] = false;
+static void selectAlgo(unsigned char nibble, bool* selectedAlgos, uint8_t* selectedIndex, int algoCount, int* currentCount) {
+	uint8_t algoDigit = (nibble & 0x0F) % algoCount;
+	if(!selectedAlgos[algoDigit]) {
+		selectedAlgos[algoDigit] = true;
+		selectedIndex[currentCount[0]] = algoDigit;
+		currentCount[0] = currentCount[0] + 1;
 	}
-	int selectedCount = 0;
-	for (j = 0; j < 64; j++) {
-		char b = (63 - j) >> 1; // 64 ascii hex chars, reversed
-		uint8_t algoDigit = ((j & 1) ? prevblock[b] & 0xF : prevblock[b] >> 4) % algoCount;
-		if(!selectedAlgo[algoDigit]) {
-			selectedAlgo[algoDigit] = true;
-			selectedCount++;
-		} else {
-			continue;
-		}
-		if(selectedCount == algoCount) {
-			break;
-		}
-		if (algoDigit >= 10)
-			sprintf(sptr, "%c", 'A' + (algoDigit - 10));
-		else
-			sprintf(sptr, "%u", (uint32_t) algoDigit);
-		sptr++;
+	algoDigit = (nibble >> 4) % algoCount;
+	if(!selectedAlgos[algoDigit]) {
+		selectedAlgos[algoDigit] = true;
+		selectedIndex[currentCount[0]] = algoDigit;
+		currentCount[0] = currentCount[0] + 1;
 	}
-	if(selectedCount < algoCount) {
-		for(uint8_t i = 0; i < algoCount; i++) {
-			if(!selectedAlgo[i]) {
-				if (i >= 10)
-					sprintf(sptr, "%c", 'A' + (i - 10));
-				else
-					sprintf(sptr, "%u", (uint32_t) i);
-				sptr++;
-			}
-		}
-	}
-	*sptr = '\0';
 }
 
-void gr_hash(const char* input, char* output, uint32_t len) {
+static void getAlgoString(void *mem, unsigned int size, uint8_t* selectedAlgoOutput, int algoCount) {
+  int i;
+  unsigned char *p = (unsigned char *)mem;
+  unsigned int len = size/2;
+  unsigned char j = 0;
+  bool selectedAlgo[algoCount];
+  for(int z=0; z < algoCount; z++) {
+	  selectedAlgo[z] = false;
+  }
+  int selectedCount = 0;
+  for (i=0;i<len; i++) {
+	  selectAlgo(p[i], selectedAlgo, selectedAlgoOutput, algoCount, &selectedCount);
+	  if(selectedCount == algoCount) {
+		  break;
+	  }
+  }
+  if(selectedCount < algoCount) {
+	for(uint8_t i = 0; i < algoCount; i++) {
+		if(!selectedAlgo[i]) {
+			selectedAlgoOutput[selectedCount] = i;
+			selectedCount++;
+		}
+	}
+  }
+}
 
+void gr_hash(const char* input, char* output) {
 	uint32_t hash[64/4];
-	char hashOrder[16] = { 0};
-	char cnHashOrder[7] = { 0};
-
 	sph_blake512_context ctx_blake;
 	sph_bmw512_context ctx_bmw;
 	sph_groestl512_context ctx_groestl;
@@ -130,9 +126,10 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 
 	void *in = (void*) input;
 	int size = 80;
-
-	getAlgoString(&input[4], hashOrder, 15);
-	getAlgoString(&input[4], cnHashOrder, 6);
+	uint8_t selectedAlgoOutput[15] = {0};
+	uint8_t selectedCNAlgoOutput[14] = {0};
+	getAlgoString(&input[4], 64, selectedAlgoOutput, 15);
+	getAlgoString(&input[4], 64, selectedCNAlgoOutput, 14);
 	int i;
 	for (i = 0; i < 18; i++)
 	{
@@ -160,14 +157,12 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 			cnSelection = 2;
 		}
 		if(coreSelection >= 0) {
-			const char elem = hashOrder[coreSelection];
-			algo = elem >= 'A' ? elem - 'A' + 10 : elem - '0';
+			algo = selectedAlgoOutput[(uint8_t)coreSelection];
 		} else {
 			algo = 16; // skip core hashing for this loop iteration
 		}
 		if(cnSelection >=0) {
-			const char cnElem = cnHashOrder[cnSelection];
-			cnAlgo = cnElem >= 'A' ? cnElem - 'A' + 10 : cnElem - '0';
+			cnAlgo = selectedCNAlgoOutput[(uint8_t)cnSelection];
 		} else {
 			cnAlgo = 14; // skip cn hashing for this loop iteration
 		}
@@ -177,20 +172,44 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 		 case CNDark:
 			cryptonightdark_hash(in, hash, size, 1);
 			break;
+		 case CNDarkf:
+			cryptonightdark_fast_hash(in, hash, size);
+			break;
 		 case CNDarklite:
 			cryptonightdarklite_hash(in, hash, size, 1);
+			break;
+		 case CNDarklitef:
+			cryptonightdarklite_fast_hash(in, hash, size);
 			break;
 		 case CNFast:
 			cryptonightfast_hash(in, hash, size, 1);
 			break;
+		 case CNFastf:
+			cryptonightfast_fast_hash(in, hash, size);
+			break;
+		 case CNF:
+			cryptonight_fast_hash(in, hash, size);
+			break;
 		 case CNLite:
 			cryptonightlite_hash(in, hash, size, 1);
+			break;
+		 case CNLitef:
+			cryptonightlite_fast_hash(in, hash, size);
+			break;
+		 case CNSoftshellf:
+			cryptonight_soft_shell_fast_hash(in, hash, size);
 			break;
 		 case CNTurtle:
 			cryptonightturtle_hash(in, hash, size, 1);
 			break;
+		 case CNTurtlef:
+			cryptonightturtle_fast_hash(in, hash, size);
+			break;
 		 case CNTurtlelite:
 			cryptonightturtlelite_hash(in, hash, size, 1);
+			break;
+		 case CNTurtlelitef:;
+			cryptonightturtlelite_fast_hash(in, hash, size);
 			break;
 		}
 		//selection core algo
@@ -210,11 +229,6 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 				sph_groestl512(&ctx_groestl, in, size);
 				sph_groestl512_close(&ctx_groestl, hash);
 				break;
-		case SKEIN:
-				sph_skein512_init(&ctx_skein);
-				sph_skein512(&ctx_skein, in, size);
-				sph_skein512_close(&ctx_skein, hash);
-				break;
 		case JH:
 				sph_jh512_init(&ctx_jh);
 				sph_jh512(&ctx_jh, in, size);
@@ -224,6 +238,11 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 				sph_keccak512_init(&ctx_keccak);
 				sph_keccak512(&ctx_keccak, in, size);
 				sph_keccak512_close(&ctx_keccak, hash);
+				break;
+		case SKEIN:
+				sph_skein512_init(&ctx_skein);
+				sph_skein512(&ctx_skein, in, size);
+				sph_skein512_close(&ctx_skein, hash);
 				break;
 		case LUFFA:
 				sph_luffa512_init(&ctx_luffa);
@@ -270,6 +289,9 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 				sph_whirlpool(&ctx_whirlpool, in, size);
 				sph_whirlpool_close(&ctx_whirlpool, hash);
 				break;
+		}
+		if(cnSelection >= 0) {
+			memset(&hash[8], 0, 32);
 		}
 		in = (void*) hash;
 		size = 64;
