@@ -110,7 +110,7 @@ static void getAlgoString(void *mem, unsigned int size, uint8_t* selectedAlgoOut
   }
 }
 
-void gr_hash(const char* input, char* output) {
+void gr_hash(const char* input, char* output, uint32_t len) {
 	uint32_t hash[64/4];
 	sph_blake512_context ctx_blake;
 	sph_bmw512_context ctx_bmw;
