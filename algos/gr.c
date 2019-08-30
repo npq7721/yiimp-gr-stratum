@@ -53,11 +53,19 @@ enum Algo {
 
 enum CNAlgo {
 	CNDark = 0,
+	CNDarkf,
 	CNDarklite,
+	CNDarklitef,
 	CNFast,
+	CNFastf,
+	CNF,
 	CNLite,
+	CNLitef,
+	CNSoftshellf,
 	CNTurtle,
+	CNTurtlef,
 	CNTurtlelite,
+	CNTurtlelitef,
 	CN_HASH_FUNC_COUNT
 };
 
